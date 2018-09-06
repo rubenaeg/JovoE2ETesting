@@ -1,0 +1,318 @@
+<template>
+    <div class="test-preview-container">
+        <div class="title">
+            <span class="title-content">Preview</span>
+        </div>
+        <div class="test-content-container">
+            <b-card no-body>
+                <b-tabs card>
+                    <b-tab :title="`${getUpperCase(platform)}`" :class="{ active: platform === 'alexa' }" v-for="platform in (testProp ? testProp.platforms : ['alexa', 'google'])"
+                           :key="platform">
+                        <div class="conversation" v-for="conversation in (testProp ? testProp.conversations : [])">
+                            <div class="message">
+                                <div class="request-input-preview speech-bubble" :class="conversation.status">
+                                    <span class="request-input">{{conversation.request.text}}</span>
+
+                                    <button type="button" class="btn btn-primary playRequestAudio"
+                                            @click="playRequestAudio(conversation)">
+                                        <font-awesome-icon icon="volume-up"/>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="message">
+                                <div class="response-input-preview speech-bubble" :class="conversation.status">
+                        <span class="response-input" :class="{ striked: conversation.status === 'failed' }">
+                            {{conversation.response.text.expected}}
+                        </span>
+                                    <span class="response-input" :class="{ disabled: conversation.status !== 'failed' }">{{conversation.response.text.actual}}</span>
+                                    <button type="button" class="btn btn-primary playResponseAudio"
+                                            @click="playResponseAudio(conversation)">
+                                        <font-awesome-icon icon="volume-up"/>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </b-tab>
+                </b-tabs>
+            </b-card>
+        </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        methods: {
+            playRequestAudio: function(conversation) {
+                if(conversation.request.audio) {
+                    new Audio(conversation.request.audio).play();
+                }
+            },
+            playResponseAudio: function(conversation) {
+                if(conversation.response.audio) {
+                    new Audio(conversation.response.audio).play();
+                }
+            },
+            getUpperCase: function(string) {
+                return string.slice(0,1).toUpperCase() + string.slice(1);
+            }
+        },
+        props: [
+            'testProp'
+        ]
+    }
+</script>
+
+<style lang="scss">
+    .test-preview-container {
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        border-radius: 5px;
+        box-shadow: 0 5px 15px 0 rgba(112, 128, 175, 0.2);
+        position: relative;
+
+        .title {
+            display: table;
+            position: absolute;
+            width: 95%;
+            height: 5%;
+            left: 0;
+            right: 0;
+            margin: auto;
+            text-align: left;
+
+            .title-content {
+                display: table-cell;
+                vertical-align: middle;
+                font-weight: bold;
+            }
+        }
+
+        .test-content-container {
+            width: 95%;
+            height: 85%;
+            margin: auto;
+            position: absolute;
+            top: 5%;
+            right: 0;
+            border-radius: 5px;
+            left: 0;
+            padding-bottom: 30px;
+            overflow: hidden;
+
+            .card {
+                height: 100%;
+                border-style: none;
+
+                .tabs {
+                    height: 100%;
+
+                    .card-header {
+                        border-style: none;
+                        background-color: white;
+                        padding: 0;
+
+                        .card-header-tabs {
+                            margin: 0 0 -5px;
+
+                            a {
+                                color: black;
+                            }
+
+                            a:hover {
+                                border-color: transparent;
+                            }
+                        }
+                    }
+
+                    .tab-content {
+                        height: 100%;
+                    }
+
+                    .tab-pane {
+                        height: 100%;
+                        overflow-y: auto;
+                        border-radius: 5px;
+                    }
+
+                    .tab-pane.active, .nav-link.active {
+                        background-color: #f3f6fb;
+                        border-style: none;
+                    }
+                }
+
+            }
+
+            .conversation {
+                width: 100%;
+                min-height: 110px;
+                height: auto;
+                overflow: hidden;
+
+                .message {
+                    position: relative;
+                    min-height: 65px;
+                    height: auto;
+                    margin-top: 4%;
+                    text-align: left;
+                    overflow: hidden;
+
+                    .message-end {
+                        content: '';
+                        bottom: 0;
+                        left: 0;
+                        width: 0;
+                        height: 0;
+                        border: 20px solid transparent;
+                        border-top-color: white;
+                        border-bottom: 0;
+                        border-left: 0;
+                        margin-left: 4%;
+                        margin-top: 86px;
+                    }
+
+                    .playRequestAudio, .playResponseAudio {
+                        background-color: transparent;
+                        border-color: transparent;
+                        position: absolute;
+                        width: 30px;
+                        height: 30px;
+                        font-size: 20px;
+                        border-radius: 50%;
+                        right: 2%;
+                        top: 0;
+                        bottom: 0;
+                        margin: auto;
+                        -webkit-transition: 0.3s;
+                        transition: 0.3s;
+
+                        .fa-volume-up {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            margin: auto;
+                            color: black;
+                            opacity: .3;
+                        }
+                    }
+
+                    .playResponseAudio {
+                        left: 2%;
+                        right: inherit;
+                    }
+
+                    .request-input-preview {
+                        position: relative;
+                        min-height: 50px;
+                        height: 100%;
+                        width: 50%;
+                        float: left;
+                        padding: 2%;
+                        margin-left: 4%;
+                        display: table;
+                        background-color: white;
+                        border-radius: 5px;
+
+                        .request-input {
+                            display: table-cell;
+                            vertical-align: middle;
+                            width: 85%;
+
+                        }
+                    }
+
+                    .request-input-preview.speech-bubble:after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 0;
+                    height: 0;
+                    border: 20px solid transparent;
+                    border-top-color: white;
+                    border-bottom: 0;
+                    border-left: 0;
+                    margin-left: 0px;
+                    margin-bottom: -15px;
+                    }
+
+                    .response-input-preview {
+                        position: relative;
+                        min-height: 50px;
+                        height: 100%;
+                        width: 50%;
+                        float: right;
+                        padding: 2%;
+                        margin-right: 4%;
+                        background-color: white;
+                        border-radius: 5px;
+
+                        .response-input {
+                            display: block;
+                            width: 85%;
+                            float: inherit;
+                        }
+
+                        .response-input.disabled {
+                            display: none;
+                        }
+
+                        .response-input.striked {
+                            text-decoration: line-through;
+                        }
+
+                        .response-input:hover {
+                            text-decoration: none;
+                        }
+                    }
+
+                    .success {
+                        background-color: #d1ffd1;
+                    }
+
+                    .success:after {
+                        border-top-color: #d1ffd1 !important;
+                    }
+
+                    .failed {
+                        background-color: #ffd1d1;
+                    }
+
+                    .failed:after {
+                        border-top-color: #ffd1d1 !important;
+                    }
+
+                    .pending, .default {
+                        background-color: white;
+                    }
+
+                    .pending, .default {
+                        border-top-color: white !important;
+                    }
+
+                    .response-input-preview.speech-bubble:after {
+                        content: '';
+                        position: absolute;
+                        bottom: 0;
+                        right: 0;
+                        width: 0;
+                        height: 0;
+                        border: 20px solid transparent;
+                        border-top-color: white;
+                        border-bottom: 0;
+                        border-right: 0;
+                        margin-left: -10px;
+                        margin-bottom: -15px;
+                    }
+                }
+            }
+        }
+        .tab-pane::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+</style>
