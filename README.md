@@ -1,6 +1,10 @@
 # jovo_e2e_.prod
 
 ## Setup
+```shell
+npm i
+```
+in both root directory and ./application. 
 
 Start Backend Server: 
 ```shell
