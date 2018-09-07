@@ -7,7 +7,7 @@
       },
       "alexa": {
         "accessToken": "",
-        "refreshToken": ""
+        "refreshToken": "sdas asd "
       }
     }
   }
