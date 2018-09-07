@@ -17,3 +17,5 @@ Start Frontend Application:
 npm run dev
 ```
 in ./application.
+
+For Authorization to work, copy content of usersDefault.txt in ./routes/authorization to users.txt in the same directory.
