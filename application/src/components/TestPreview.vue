@@ -295,7 +295,7 @@
                     }
 
                     .success {
-                        background-color: #d1ffd1;
+                        background-color: #bcfdbc;
                     }
 
                     .success:after {

@@ -84,7 +84,10 @@ function sendRequest(payload, token) {
 
             req.on('error', (e) => {
                 console.log('HIER');
-                console.log(e);
+                reject({
+                    statusCode: e.code,
+                    message: 'Error'
+                })
             });
 
             req.setEncoding('binary');

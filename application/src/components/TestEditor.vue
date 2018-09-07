@@ -83,6 +83,16 @@
         ],
         methods: {
             addTest: function() {
+                if(!this.test.title) {
+                    return this.$emit('throwError', 'Test requires a title');
+                }
+                if(this.test.platforms.length === 0) {
+                    return this.$emit('throwError', 'Select a platform!')
+                }
+
+                console.log(this.test.platforms);
+                console.log(this.test);
+
                 this.test.status = 'default';
                 for(let conversation of this.test.conversations) {
                     conversation.status = 'default';
@@ -492,7 +502,8 @@
                 .platforms-container {
                     position: absolute;
                     width: 20%;
-                    left: 26%;
+                    left: 80px;
+                    min-width: 60px;
                     height: 100%;
                     top: 0;
                     bottom: 0;

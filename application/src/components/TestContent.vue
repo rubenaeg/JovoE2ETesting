@@ -1,5 +1,13 @@
 <template>
     <div class="test-content-container">
+        <transition name="fade">
+            <div class="error" v-if="error">
+                <span>
+                    <font-awesome-icon icon="exclamation-circle" />
+                    {{error}}
+                </span>
+            </div>
+        </transition>
         <div class="column-left">
             <test-list ref="testList" :tests-prop="tests" :selected-test-prop="selectedTest"
                        @updateTestStatus="updateTestStatus"
@@ -14,7 +22,7 @@
             <test-preview :test-prop="tests[this.selectedTest]" ref="preview"/>
         </div>
         <div class="test-editor-overlay-container" :class="{ active: testEditorIsActive}">
-            <test-editor @showTestEditor="showTestEditor" @editTestFinal="editTestFinal"
+            <test-editor @showTestEditor="showTestEditor" @editTestFinal="editTestFinal" @throwError="throwError"
                          :test-to-edit="testToEdit"/>
         </div>
     </div>
@@ -23,7 +31,6 @@
     import TestPreview from './TestPreview'
     import TestList from './TestList'
     import TestEditor from './TestEditor'
-    // import TestsStore from '../store/TestsStore'
 
     export default {
         components: {
@@ -55,7 +62,8 @@
                     ],
                     platforms: ['alexa', 'google']
                 },
-                editingTest: -1
+                editingTest: -1,
+                error: ''
             }
         },
         methods: {
@@ -122,6 +130,12 @@
             },
             deleteTest: function(index) {
                 this.tests.splice(index, 1);
+            },
+            throwError: function(msg) {
+                this.error = msg;
+                setTimeout(() => {
+                    this.error = '';
+                }, 2000);
             }
         }
     }
@@ -139,6 +153,42 @@
         text-align: center;
         position: relative;
         margin: auto;
+
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity .5s;
+        }
+        .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+            opacity: 0;
+        }
+
+        .error {
+            width: 25%;
+            height: 6%;
+            z-index: 10;
+            position: absolute;
+            top: 2%;
+            left: 0;
+            background-color: #FF353D;
+            right: 0;
+            margin: auto;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px 0 rgba(112, 128, 175, 0.2);
+
+            span {
+                width: 80%;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                margin: auto;
+                height: 58%;
+                color: white;
+                font-size: 20px;
+                font-weight: bold;
+                text-align: center;
+            }
+        }
 
         .test-editor-overlay-container {
             width: 100%;

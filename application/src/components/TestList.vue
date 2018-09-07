@@ -275,6 +275,7 @@
                     .platforms-container {
                         position: absolute;
                         width: 16%;
+                        min-width: 60px;
                         max-width: 65px;
                         left: 6%;
                         height: 100%;

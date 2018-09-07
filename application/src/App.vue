@@ -99,6 +99,7 @@
 
     .navbar {
         background-color: #465b8e !important;
+        z-index: 1000;
         padding-top: 7px;
         padding-bottom: 7px;
         background-image: url(https://www.jovo.tech/img/Header-BG.png), linear-gradient(45deg, #a1e6f2 0%, #5e98e8 58%, #327be2 100%);
