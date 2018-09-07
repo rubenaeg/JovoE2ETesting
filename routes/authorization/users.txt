@@ -1,0 +1,14 @@
+{
+  "ruben": {
+    "authorization": {
+      "google": {
+        "accessToken": "ya29.GlsRBqOWVRDmXyl3nx0jDD_XneJ-LEHgOxyTF-JvYyRt3qPCD-1zxMw6oKD0jUPaAGXemfioREobmTM7YRhszVXU-GvrxGxDEH7XPQJujj3z4IZhcgDcS1i5GKTq",
+        "refreshToken": "1/sznJCwpowOEQVkFn1FQJGG1h_DFgKnv7bvSPUumI9B8"
+      },
+      "alexa": {
+        "accessToken": "ya29.GlsRBi9faevD_FDRjZSMpzo2aN5fwHRBbX8Tl4_tXjcuJNwQZL660xRJ2F5zlIDO1HDffuQcLNmqrWKtRp5xxGefwyFGlSL0A9mSoe5zQwmk3EQBuoaNoAVCIDWw",
+        "refreshToken": "Atzr|IwEBILtZGP-LlOJpENyLqbgQhUsZ8H6HKku0H1IJllq8LF4FwiE8kcbooenkNIEqLxXLF5Y0vyTG0wR-RbEfkhcMcVZ54PhSPVl5gutyEc9f5SflZtCFkWqybgmoRcqLMVM4CD8ot9aOUHrmL02-rvujmpfMlvMm3CvYJWSmOpL_QXyntI6UUliQ6eoqQJKy1dakGgk4dCcoO1vRAZgPaa_LeMpPcVlAO8PpD9qx42RZayuv59PAxqb_1u_eOuzgGTPBogz1NKI6qwCi2DYztncG8UTl1ztvFb3x6jbOb0uhSU09BB_jqGf_JpJAkD-QD3JVWjPmsPPAVOCEcrIANigpxwOReJlhqdW3MdFWiyAGzCPWseL6LXjM8q8XzeqOx4Sr99y8hvmY4aKISbsy_nMUhVXUlZ_KnIrYq9YGy63T_t0RoIMsvZ6tpiPEM0BtEvRPzyJalT66nQ-BcjRK9uPsAsCdsTEn2Zn4H2JepsZsU-rEN3AVfAYZFQXduKC4nzSnOET-F32rEAzWQXrmvY-mu5nvIL7OV1cSNDPcseiKFy2aRg"
+      }
+    }
+  }
+}

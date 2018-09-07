@@ -7,7 +7,7 @@ import router from './router'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faMicrophone, faPlay, faVolumeUp, faExclamationCircle,
     faCheckCircle, faPlus, faAngleDown, faPen, faTrash, faCheck,
-    faEllipsisH, faSpinner, faTimes, faCircle, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+    faEllipsisH, faSpinner, faTimes, faCircle, faSignOutAlt, faStop } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 library.add(
@@ -25,7 +25,8 @@ library.add(
     faEllipsisH,
     faTimes,
     faCircle,
-    faSignOutAlt
+    faSignOutAlt,
+    faStop
 );
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);

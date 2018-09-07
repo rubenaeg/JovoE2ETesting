@@ -4,7 +4,6 @@ const express = require('express');
 const request = require('request');
 const fs = require('fs');
 const http2 = require('http2');
-const bodyParser = require('body-parser');
 const httpParser = require('http-message-parser');
 
 const awaitResponse = require('./logging/jovoLogging').getSpeech;
@@ -13,7 +12,8 @@ const refreshAccessToken = require('./authorization/authorization').refreshAlexa
 
 const audioAmazon = express.Router();
 
-audioAmazon.use(bodyParser.json());
+audioAmazon.use(express.urlencoded({limit: '50mb'}));
+audioAmazon.use(express.json({limit: '50mb'}));
 
 audioAmazon.route('/')
     .post(async(req, res, next) => {
@@ -24,23 +24,25 @@ audioAmazon.route('/')
 
         let requestAudio = req.body.requestAudio;
         requestAudio = requestAudio.replace('data:audio/wav;base64,', '');
+
+        let payload = buildPayload(requestAudio);
         let result = '';
 
         try {
             let accessToken = getAccessToken(req.body.userId, 'alexa');
-            result = await postAudioToAmazon(requestAudio, accessToken);
+            result = await sendRequest(payload, accessToken);
         } catch(e) {
             if(e.statusCode === 403) {
                 try {
                     let accessToken = await refreshAccessToken(req.body.userId);
-                    result = await postAudioToAmazon(requestAudio, accessToken);
+                    result = await sendRequest(payload, accessToken);
                 } catch(e) {
                     console.log(e.message);
-                    return res.send('Hä');
+                    return res.send('Refresh Token is not valid anymore or AVS Endpoint is not running.');
                 }
             } else {
                 res.statusCode = e.statusCode;
-                res.send('ERROR');
+                return res.send('ERROR');
             }
         }
 
@@ -56,16 +58,7 @@ audioAmazon.route('/')
         res.send(responseBody);
     });
 
-
-function postAudioToAmazon(audioFile, token) {
-    console.log('Building Payload...');
-    const payload = buildPayload(audioFile);
-    console.log('Payload successfully built.');
-
-    return sendRecognizeRequest(payload, token);
-}
-
-function sendRecognizeRequest(payload, token) {
+function sendRequest(payload, token) {
     console.log('Sending Recognize Event...');
 
     try {
@@ -96,9 +89,10 @@ function sendRecognizeRequest(payload, token) {
                 response += chunk;
             });
             req.on('end', async() => {
-                if(statusCode != 200) {
+                if(statusCode !== 200) {
                     return reject({
-                        statusCode: statusCode
+                        statusCode: statusCode,
+                        message: 'Some error I don\'t know'
                     })
                 }
 

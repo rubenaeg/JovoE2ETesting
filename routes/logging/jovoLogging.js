@@ -12,13 +12,16 @@ let speech = '';
 jovoLogging.route('/')
     .post((req, res, next) => {
         console.log(req.body);
-        speech = req.body.response.outputSpeech.ssml;
+        try {
+            speech = req.body.response.outputSpeech.ssml;
+        } catch(e) {
+            speech = 'Error in getting Speech!';
+        }
     });
 
 function getSpeech() {
     let text = speech;
     speech = '';
-    console.log(text);
     return text.replace(/<speak>/g, '').replace(/<\/speak>/g, '');
 }
 

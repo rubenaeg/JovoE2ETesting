@@ -6,7 +6,8 @@
         <div class="test-content-container">
             <b-card no-body>
                 <b-tabs card>
-                    <b-tab :title="`${getUpperCase(platform)}`" :class="{ active: platform === 'alexa' }" v-for="platform in (testProp ? testProp.platforms : ['alexa', 'google'])"
+                    <b-tab :title="`${getUpperCase(platform)}`" :class="{ active: platform === 'alexa' }"
+                           v-for="platform in (testProp ? testProp.platforms : ['alexa', 'google'])"
                            :key="platform">
                         <div class="conversation" v-for="conversation in (testProp ? testProp.conversations : [])">
                             <div class="message">
@@ -14,8 +15,13 @@
                                     <span class="request-input">{{conversation.request.text}}</span>
 
                                     <button type="button" class="btn btn-primary playRequestAudio"
-                                            @click="playRequestAudio(conversation)">
+                                            @click="playAudio(conversation.request.audio, 'request')"
+                                            v-if="!requestAudioPlaying">
                                         <font-awesome-icon icon="volume-up"/>
+                                    </button>
+                                    <button type="button" class="btn btn-primary playRequestAudio"
+                                            @click="stopAudio('request')" v-else>
+                                        <font-awesome-icon icon="stop"/>
                                     </button>
                                 </div>
                             </div>
@@ -25,10 +31,16 @@
                         <span class="response-input" :class="{ striked: conversation.status === 'failed' }">
                             {{conversation.response.text.expected}}
                         </span>
-                                    <span class="response-input" :class="{ disabled: conversation.status !== 'failed' }">{{conversation.response.text.actual}}</span>
+                                    <span class="response-input"
+                                          :class="{ disabled: conversation.status !== 'failed' }">{{conversation.response.text.actual}}</span>
                                     <button type="button" class="btn btn-primary playResponseAudio"
-                                            @click="playResponseAudio(conversation)">
+                                            @click="playAudio(conversation.response.audio, 'response')"
+                                            v-if="!responseAudioPlaying">
                                         <font-awesome-icon icon="volume-up"/>
+                                    </button>
+                                    <button type="button" class="btn btn-primary playResponseAudio"
+                                            @click="stopAudio('response')" v-else>
+                                        <font-awesome-icon icon="stop"/>
                                     </button>
                                 </div>
                             </div>
@@ -42,19 +54,32 @@
 
 <script>
     export default {
+        data: function() {
+            return {
+                requestAudioPlaying: false,
+                requestAudioElement: '',
+                responseAudioPlaying: false,
+                responseAudioElement: ''
+            }
+        },
         methods: {
-            playRequestAudio: function(conversation) {
-                if(conversation.request.audio) {
-                    new Audio(conversation.request.audio).play();
+            playAudio: function(audio, type) {
+                if(!audio) {
+                    return;
                 }
+                this[type + 'AudioElement'] = new Audio(audio);
+                this[type + 'AudioElement'].play();
+                this[type + 'AudioElement'].onended = () => {
+                    this[type + 'AudioPlaying'] = false;
+                };
+                this[type + 'AudioPlaying'] = true;
             },
-            playResponseAudio: function(conversation) {
-                if(conversation.response.audio) {
-                    new Audio(conversation.response.audio).play();
-                }
+            stopAudio: function(type) {
+                this[type + 'AudioElement'].pause();
+                this[type + 'AudioPlaying'] = false;
             },
             getUpperCase: function(string) {
-                return string.slice(0,1).toUpperCase() + string.slice(1);
+                return string.slice(0, 1).toUpperCase() + string.slice(1);
             }
         },
         props: [
@@ -187,7 +212,7 @@
                         -webkit-transition: 0.3s;
                         transition: 0.3s;
 
-                        .fa-volume-up {
+                        .fa-volume-up, .fa-stop {
                             position: absolute;
                             top: 0;
                             left: 0;
@@ -225,18 +250,18 @@
                     }
 
                     .request-input-preview.speech-bubble:after {
-                    content: '';
-                    position: absolute;
-                    bottom: 0;
-                    left: 0;
-                    width: 0;
-                    height: 0;
-                    border: 20px solid transparent;
-                    border-top-color: white;
-                    border-bottom: 0;
-                    border-left: 0;
-                    margin-left: 0px;
-                    margin-bottom: -15px;
+                        content: '';
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        width: 0;
+                        height: 0;
+                        border: 20px solid transparent;
+                        border-top-color: white;
+                        border-bottom: 0;
+                        border-left: 0;
+                        margin-left: 0px;
+                        margin-bottom: -15px;
                     }
 
                     .response-input-preview {

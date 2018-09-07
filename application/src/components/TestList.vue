@@ -79,17 +79,15 @@
             startTests: async function() {
                 for(let i of this.testsToTest.sort((a, b) => { return a - b; })) {
                     let test = this.tests[i];
-                    console.log(test.title);
-                    // Set status to pending and force render update to update icon
+                    this.activate(i);
                     this.$emit('updateTestStatus', 'pending', i);
 
-                    // Run this authorizeAlexa for all registered platforms
+                    // Run tests for all registered platforms
                     for(let platform of test.platforms) {
                         let status = 'success';
                         console.log('Platform: ' + platform);
 
-                        for(let j = 0; j < test.conversations.length; j++) {
-                            let conversation = test.conversations[j];
+                        for(let [j, conversation] of test.conversations.entries()) {
                             let requestAudio = conversation.request.audio;
                             let responseText = conversation.response.text.expected;
 
@@ -98,12 +96,12 @@
                                 requestAudio: requestAudio
                             });
                             console.log('Sending Request...');
-                            console.log(data);
 
                             let url = 'http://localhost:8008/audio-' + platform;
                             try {
                                 let response = await this.$http.post(url, data);
                                 console.log('Request sent.');
+                                console.log(response);
                                 if(response.body.audioText !== responseText) {
                                     status = 'failed';
                                     this.$emit('updateConversationStatus', status, i, j);
@@ -139,6 +137,7 @@
                         continue;
                     }
                     this.$refs[ref][0].checked = selected;
+                    this.selectTest(selected, parseInt(ref.split('_')[1]));
                 }
             },
             selectTest: function(selected, index) {
@@ -152,13 +151,13 @@
                         if(this.testsToTest[i] === index) {
                             this.testsToTest.splice(i, 1);
                         }
+                        console.log(this.testsToTest[i]);
                     }
                 }
             }
         },
         watch: {
             testsProp: function() {
-                console.log('WATCHED');
                 this.tests = JSON.parse(JSON.stringify(this.testsProp));
             },
             selectedTestProp: function() {

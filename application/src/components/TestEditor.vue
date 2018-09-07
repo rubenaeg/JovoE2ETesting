@@ -34,8 +34,11 @@
                                     v-on:mouseup="stopRecording(i)">
                                 <font-awesome-icon icon="microphone"/>
                             </button>
-                            <button type="button" class="btn btn-primary play" @click="playAudio(i)">
-                                <font-awesome-icon icon="volume-up"/>
+                            <button type="button" class="btn btn-primary play" @click="playAudio(i)" v-if="!audioPlaying">
+                                <font-awesome-icon icon="volume-up" />
+                            </button>
+                            <button type="button" class="btn btn-primary play" @click="stopAudio()" v-else>
+                                <font-awesome-icon icon="stop" />
                             </button>
                         </div>
 
@@ -71,6 +74,8 @@
             return {
                 test: JSON.parse(JSON.stringify(this.testToEdit)),
                 recorder: '',
+                audioPlaying: false,
+                audioElement: ''
             }
         },
         props: [
@@ -89,7 +94,6 @@
                 this.$emit('showTestEditor', false);
             },
             addConversation: function() {
-                console.log(this.test.conversations[0].request.text);
                 this.test.conversations.push({
                     request: {
                         text: '',
@@ -103,7 +107,6 @@
                         audio: ''
                     }
                 });
-                this.$forceUpdate();
             },
             startRecording: function() {
                 let recorder = new Recorder();
@@ -117,8 +120,18 @@
                 });
             },
             playAudio: function(index) {
-                let audio = new Audio(this.getAudio(index));
-                audio.play();
+                console.log(this.audioPlaying);
+                this.audioElement = new Audio(this.getAudio(index));
+                this.audioElement.onended = () => {
+                    this.audioPlaying = false;
+                };
+                this.audioElement.play();
+                this.audioPlaying = true;
+            },
+            stopAudio: function() {
+                let audio = this.audioElement;
+                audio.pause();
+                this.audioPlaying = false;
             },
             getAudio: function(index) {
                 if(this.test.conversations[index]) {
@@ -306,7 +319,7 @@
                                 -webkit-transition: 0.3s;
                                 transition: 0.3s;
 
-                                .fa-volume-up {
+                                .fa-volume-up, .fa-stop {
                                     position: absolute;
                                     top: 0;
                                     left: 0;
