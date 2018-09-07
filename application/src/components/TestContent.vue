@@ -55,8 +55,7 @@
                     ],
                     platforms: ['alexa', 'google']
                 },
-                editing: false,
-                editingTest: 0
+                editingTest: -1
             }
         },
         methods: {
@@ -74,7 +73,6 @@
             updateConversationStatus: function(status, testIndex, conversationIndex) {
                 this.tests[testIndex].conversations[conversationIndex].status = status;
                 this.updateTestsArray();
-                this.updatePreview();
             },
             updateTestResponseContent: function(responseBody, testIndex, conversationIndex) {
                 this.tests[testIndex].conversations[conversationIndex].response.audio = responseBody.audioContent;
@@ -104,21 +102,17 @@
                     ],
                     platforms: ['alexa', 'google']
                 };
-                this.editing = false;
+                this.editingTest = -1;
                 this.showTestEditor(true);
-            },
-            updatePreview: function() {
-                this.$refs.preview.$forceUpdate();
             },
             editTest: function(index) {
                 this.selectedTest = index;
                 this.testToEdit = this.tests[index];
-                this.editing = true;
                 this.editingTest = index;
                 this.showTestEditor(true);
             },
             editTestFinal: function(test) {
-                if(!this.editing) {
+                if(this.editingTest === -1) {
                     console.log('Adding new Test!');
                     return this.tests.push(test);
                 }

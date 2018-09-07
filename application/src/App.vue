@@ -47,11 +47,23 @@
             }
         },
         methods: {
-            alexaLogout: function() {
-                this.alexaAuthorized = false;
+            alexaLogout: async function() {
+                if(this.alexaAuthorized) {
+                    let data = JSON.stringify({
+                        userId: this.$route.params.id,
+                        platform: 'alexa'
+                    });
+                    await this.$http.post('http://localhost:8008/authorization/logout', data);
+                }
             },
-            googleLogout: function() {
-                this.googleAuthorized = false;
+            googleLogout: async function() {
+                if(this.googleAuthorized) {
+                    let data = JSON.stringify({
+                        userId: this.$route.params.id,
+                        platform: 'google'
+                    });
+                    await this.$http.post('http://localhost:8008/authorization/logout', data);
+                }
             }
         },
         async mounted() {

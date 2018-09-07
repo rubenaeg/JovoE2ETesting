@@ -66,7 +66,7 @@ function buildPayload(audioFile) {
             audioConfig: {
                 audioEncoding: 'AUDIO_ENCODING_LINEAR_16',
                 sampleRateHertz: 16000,
-                languageCode: 'de'
+                languageCode: 'en'
             }
         },
         outputAudioConfig: {
@@ -107,8 +107,10 @@ function sendRequest(payload, token) {
                     }
                 }
 
+                console.log(body);
+
                 resolve({
-                    audioContent: 'data:audio/wav;base64,' +  JSON.parse(body).outputAudio,
+                    audio: 'data:audio/wav;base64,' +  JSON.parse(body).outputAudio,
                     status: 200
                 });
             }

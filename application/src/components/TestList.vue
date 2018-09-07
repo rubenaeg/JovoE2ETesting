@@ -38,7 +38,7 @@
                         <div class="edit-test-container" @click="$emit('editTest', index)">
                             <font-awesome-icon icon="pen"/>
                         </div>
-                        <div class="delete-test-container" @click="$emit('deleteTest', index)">
+                        <div class="delete-test-container" @click="deleteTest(index)">
                             <font-awesome-icon icon="trash"/>
                         </div>
                     </div>
@@ -73,11 +73,15 @@
         ],
         methods: {
             activate: function(index) {
-                console.log(this.tests[0].title);
+                console.log(this.testsToTest);
+                console.log(this.$refs);
+
                 this.$emit('setSelectedTest', index);
             },
             startTests: async function() {
-                for(let i of this.testsToTest.sort((a, b) => { return a - b; })) {
+                for(let i of this.testsToTest.sort((a, b) => {
+                    return a - b;
+                })) {
                     let test = this.tests[i];
                     this.activate(i);
                     this.$emit('updateTestStatus', 'pending', i);
@@ -123,6 +127,14 @@
                     }
                 }
             },
+            deleteTest: function(index) {
+                this.$emit('deleteTest', index);
+                for(let i = 0; i < this.testsToTest.length; i++) {
+                    if(this.testsToTest[i] === index) {
+                        this.testsToTest.splice(i, 1);
+                    }
+                }
+            },
             hasPlatform: function(test, platform) {
                 for(let p of test.platforms) {
                     if(p === platform) {
@@ -132,6 +144,7 @@
                 return false;
             },
             selectAllTests: function(selected) {
+                console.log(this.$refs);
                 for(let ref in this.$refs) {
                     if(ref === 'testItemsSelection') {
                         continue;
@@ -151,7 +164,6 @@
                         if(this.testsToTest[i] === index) {
                             this.testsToTest.splice(i, 1);
                         }
-                        console.log(this.testsToTest[i]);
                     }
                 }
             }

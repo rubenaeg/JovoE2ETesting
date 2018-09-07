@@ -96,6 +96,18 @@ authorization.route('/google')
 
     });
 
+authorization.route('/logout')
+    .post((req, res, next) => {
+        let userId = req.body.userId;
+        let platform = req.body.platform;
+        let users = getUsers();
+        users[userId].authorization[platform].accessToken = '';
+        users[userId].authorization[platform].refreshToken = '';
+        setUsers(users);
+        res.statusCode = 200;
+        res.send('Succesfully logged out!');
+    });
+
 function getAlexaAccessToken(authorizationCode) {
     let url = 'https://api.amazon.com/auth/o2/token';
     let body = 'grant_type=authorization_code&' +
@@ -218,8 +230,6 @@ function getAccessToken(userId, platform) {
     console.log('Get Access Token');
 
     let users = getUsers();
-    console.log(users);
-    console.log(userId);
     if(users[userId]) {
         return users[userId].authorization[platform].accessToken;
     }

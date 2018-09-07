@@ -82,6 +82,11 @@ function sendRequest(payload, token) {
                 }
             });
 
+            req.on('error', (e) => {
+                console.log('HIER');
+                console.log(e);
+            });
+
             req.setEncoding('binary');
 
             let response = '';
