@@ -11,7 +11,7 @@
                            :key="platform">
                         <div class="conversation" v-for="conversation in (testProp ? testProp.conversations : [])">
                             <div class="message">
-                                <div class="request-input-preview speech-bubble" :class="conversation.status">
+                                <div class="request-input-preview speech-bubble" :class="conversation.status[platform]">
                                     <span class="request-input">{{conversation.request.text}}</span>
 
                                     <button type="button" class="btn btn-primary playRequestAudio"
@@ -27,14 +27,16 @@
                             </div>
 
                             <div class="message">
-                                <div class="response-input-preview speech-bubble" :class="conversation.status">
-                        <span class="response-input" :class="{ striked: conversation.status === 'failed' }">
-                            {{conversation.response.text.expected}}
-                        </span>
-                                    <span class="response-input"
-                                          :class="{ disabled: conversation.status !== 'failed' }">{{conversation.response.text.actual}}</span>
+                                <div class="response-input-preview speech-bubble"
+                                     :class="conversation.status[platform]">
+                                    <span class="response-input" :class="{ striked: conversation.status[platform] === 'failed' }">
+                                        {{conversation.response.text.expected}}
+                                    </span>
+                                    <span class="response-input" :class="{ disabled: conversation.status[platform] !== 'failed' }">
+                                        {{conversation.response.text.actual}}
+                                    </span>
                                     <button type="button" class="btn btn-primary playResponseAudio"
-                                            @click="playAudio(conversation.response.audio, 'response')"
+                                            @click="playAudio(conversation.response.audio[platform], 'response')"
                                             v-if="!responseAudioPlaying">
                                         <font-awesome-icon icon="volume-up"/>
                                     </button>
@@ -260,7 +262,7 @@
                         border-top-color: white;
                         border-bottom: 0;
                         border-left: 0;
-                        margin-left: 0px;
+                        margin-left: 0;
                         margin-bottom: -15px;
                     }
 
@@ -295,11 +297,11 @@
                     }
 
                     .success {
-                        background-color: #bcfdbc;
+                        background-color: #a1f3a1;
                     }
 
                     .success:after {
-                        border-top-color: #d1ffd1 !important;
+                        border-top-color: #a1f3a1 !important;
                     }
 
                     .failed {

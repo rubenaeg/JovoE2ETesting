@@ -12,15 +12,6 @@ export default new Router({
             path: '/:id',
             name: 'TestContent',
             component: TestContent
-        },
-        {
-            path: '/authresponse/alexa',
-            name: 'Authorization Response',
-            redirect: '/ruben'
-        },
-        {
-            path: '/authresponse/dialogflow',
-            redirect: '/ruben'
         }
     ],
     mode: 'history'

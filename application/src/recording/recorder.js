@@ -1,15 +1,8 @@
 import WavEncoder from './wav-encoder'
 
 export default class {
-    constructor(options = {}) {
-        this.afterStop = options.afterStop
-        this.micFailed = options.micFailed
-
-        this.bufferSize = 4096
-        this.records = []
-        this.samples = []
-
-        this.isRecording = false
+    constructor() {
+        this.samples = [];
     }
 
     start() {
@@ -19,40 +12,33 @@ export default class {
     }
 
     stop(emitAudioCallback) {
-        this.stream.getTracks().forEach((track) => track.stop())
-        this.input.disconnect()
-        this.processor.disconnect()
-        this.context.close()
+        this.stream.getTracks().forEach((track) => track.stop());
+        console.log(this.stream.getTracks());
+        this.input.disconnect();
+        this.processor.disconnect();
+        this.context.close();
 
         let encoder = new WavEncoder({
-            bufferSize: this.bufferSize,
+            bufferSize: 4096,
             sampleRate: 48000,
             samples: this.samples
         });
 
-        let audioBlob = encoder.getData()
-        let audioUrl = URL.createObjectURL(audioBlob)
-
-        this.samples = []
+        let audioBlob = encoder.getData();
 
         let reader = new FileReader();
         reader.readAsDataURL(audioBlob);
         reader.onloadend = function() {
             emitAudioCallback(reader.result);
         };
-
-        this.records.push({
-            blob: audioBlob,
-            url: audioUrl
-        });
-
-        if(this.afterStop) {
-            this.afterStop()
-        }
     }
 
     captureAudio(stream) {
         this.context = new (window.AudioContext || window.webkitAudioContext)();
+
+        /* Create a MediaStreamAudioDestinationNode associated with a MediaStream captured when mounting
+         * the app, used to capture the incoming audio from the microphone.
+         */
         this.input = this.context.createMediaStreamSource(stream);
         this.processor = this.context.createScriptProcessor(this.bufferSize, 1, 1);
         this.stream = stream;
@@ -67,8 +53,6 @@ export default class {
     }
 
     _micError(error) {
-        if(this.micFailed) {
-            this.micFailed(error)
-        }
+        console.log(error);
     }
 }

@@ -27,11 +27,21 @@ audioAmazon.route('/')
 
         let payload = buildPayload(requestAudio);
         let result = '';
+        //
+        // let accessToken = getAccessToken(req.body.userId, 'alexa');
+        // sendRequest(payload, accessToken)
+        //     .then((res) => {
+        //         let result = res;
+        //     })
+        //     .catch((e) => {
+        //         console.log('AAAAAAH');
+        //     });
 
         try {
             let accessToken = getAccessToken(req.body.userId, 'alexa');
             result = await sendRequest(payload, accessToken);
         } catch(e) {
+            console.log('ERRPR WUUUH');
             if(e.statusCode === 403) {
                 try {
                     let accessToken = await refreshAccessToken(req.body.userId);
@@ -41,6 +51,7 @@ audioAmazon.route('/')
                     return res.send('Refresh Token is not valid anymore or AVS Endpoint is not running.');
                 }
             } else {
+                console.log('ERROR FOR ALEXA');
                 res.statusCode = e.statusCode;
                 return res.send('ERROR');
             }
@@ -84,7 +95,7 @@ function sendRequest(payload, token) {
 
             req.on('error', (e) => {
                 console.log('HIER');
-                reject({
+                return reject({
                     statusCode: e.code,
                     message: 'Error'
                 })
@@ -96,6 +107,7 @@ function sendRequest(payload, token) {
             req.on('data', (chunk) => {
                 response += chunk;
             });
+
             req.on('end', async() => {
                 if(statusCode !== 200) {
                     return reject({

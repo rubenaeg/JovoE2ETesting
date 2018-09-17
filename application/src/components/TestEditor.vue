@@ -72,14 +72,15 @@
     export default {
         data: function() {
             return {
-                test: JSON.parse(JSON.stringify(this.testToEdit)),
+                test: JSON.parse(JSON.stringify(this.testToEditProp)),
                 recorder: '',
                 audioPlaying: false,
-                audioElement: ''
+                audioElement: '',
+                mediaStream: ''
             }
         },
         props: [
-            'testToEdit'
+            'testToEditProp',
         ],
         methods: {
             addTest: function() {
@@ -94,8 +95,10 @@
                 console.log(this.test);
 
                 this.test.status = 'default';
+
                 for(let conversation of this.test.conversations) {
-                    conversation.status = 'default';
+                    conversation.status.alexa = 'default';
+                    conversation.status.google = 'default';
                 }
                 this.$emit('editTestFinal', JSON.parse(JSON.stringify(this.test)));
                 this.exit();
@@ -114,14 +117,21 @@
                             expected: '',
                             actual: ''
                         },
-                        audio: ''
+                        audio: {
+                            google: '',
+                            alexa: ''
+                        }
+                    },
+                    status: {
+                        alexa: '',
+                        google: ''
                     }
                 });
             },
             startRecording: function() {
                 let recorder = new Recorder();
                 this.recorder = recorder;
-                recorder.start();
+                recorder.start(this.mediaStreamProp);
             },
             stopRecording: function(index) {
                 let recorder = this.recorder;
@@ -214,9 +224,13 @@
             }
         },
         watch: {
-            testToEdit: function() {
-                this.test = JSON.parse(JSON.stringify(this.testToEdit));
+            testToEditProp: function() {
+                this.test = JSON.parse(JSON.stringify(this.testToEditProp));
             }
+        },
+        mounted: async function() {
+            let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            this.mediaStream = stream;
         }
     }
 </script>
@@ -407,7 +421,7 @@
                                 border-top-color: white;
                                 border-bottom: 0;
                                 border-left: 0;
-                                margin-left: 0px;
+                                margin-left: 0;
                                 margin-bottom: -15px;
                             }
 

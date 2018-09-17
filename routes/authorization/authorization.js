@@ -18,16 +18,25 @@ authorization.route('/')
             body.alexaAuthorized = !!users[query.id].authorization.alexa.refreshToken;
             body.googleAuthorized = !!users[query.id].authorization.google.refreshToken;
             res.send(body);
+        } else {
+            res.status(400)
+                .send('Bad Request, id not specified.');
         }
     })
     .post((req, res, next) => {
+        if(!req.body || !req.body.id) {
+            return res.status(400).send('Bad Request, ID not specified.');
+        }
+
         let userId = req.body.id;
         let users = getUsers();
         let user = {
             authorization: {
                 google: {
                     accessToken: '',
-                    refreshToken: ''
+                    refreshToken: '',
+                    projectId: '',
+                    languageCode: ''
                 },
                 alexa: {
                     accessToken: '',
@@ -36,8 +45,7 @@ authorization.route('/')
             }
         };
         if(users[userId]) {
-            res.statusCode = 204;
-            res.send('Already authorized, access token might be deprecated.');
+            res.status(204).send('Already authorized, access token might be deprecated.');
         } else {
             users[userId] = user;
             setUsers(users);
@@ -90,10 +98,21 @@ authorization.route('/google')
             setUsers(users);
         }
         res.writeHead(301,
-            {Location: 'http://localhost:8080/' + query.state}
+            {Location: 'http://localhost:8080/' + query.state + '?gA=true'}
         );
         res.end();
+    })
+    .post((req, res, next) => {
+        let userId = req.body.userId;
+        let projectId = req.body.projectId;
+        let language = req.body.languageCode;
+        let users = getUsers();
+        users[userId].authorization.google.projectId = projectId;
+        users[userId].authorization.google.languageCode = language;
+        setUsers(users);
 
+        res.statusCode = 200;
+        res.send('Successful saved projectId and language.');
     });
 
 authorization.route('/logout')
@@ -236,6 +255,22 @@ function getAccessToken(userId, platform) {
     return '';
 }
 
+function getGoogleProjectId(userId) {
+    let users = getUsers();
+    if(users[userId]) {
+        return users[userId].authorization.google.projectId;
+    }
+    return '';
+}
+
+function getGoogleProjectLanguageCode(userId) {
+    let users = getUsers();
+    if(users[userId]) {
+        return users[userId].authorization.google.languageCode;
+    }
+    return '';
+}
+
 function setUsers(json) {
     fs.writeFileSync('./routes/authorization/users.txt', JSON.stringify(json, null, 2));
 }
@@ -249,3 +284,6 @@ module.exports.authorization = authorization;
 module.exports.getAccessToken = getAccessToken;
 module.exports.refreshAlexaAccessToken = refreshAlexaAccessToken;
 module.exports.refreshGoogleAccessToken = refreshGoogleAccessToken;
+
+module.exports.getGoogleProjectId = getGoogleProjectId;
+module.exports.getGoogleProjectLanguageCode = getGoogleProjectLanguageCode;

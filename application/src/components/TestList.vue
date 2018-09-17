@@ -84,12 +84,11 @@
                 })) {
                     let test = this.tests[i];
                     this.activate(i);
-                    this.$emit('updateTestStatus', 'pending', i);
 
                     // Run tests for all registered platforms
                     for(let platform of test.platforms) {
+                        this.$emit('updateTestStatus', 'pending', i);
                         let status = 'success';
-                        console.log('Platform: ' + platform);
 
                         for(let [j, conversation] of test.conversations.entries()) {
                             let requestAudio = conversation.request.audio;
@@ -99,27 +98,24 @@
                                 userId: this.$route.params.id,
                                 requestAudio: requestAudio
                             });
-                            console.log('Sending Request...');
 
                             let url = 'http://localhost:8008/audio-' + platform;
                             try {
                                 let response = await this.$http.post(url, data);
-                                console.log('Request sent.');
-                                console.log(response);
                                 if(response.body.audioText !== responseText) {
                                     status = 'failed';
-                                    this.$emit('updateConversationStatus', status, i, j);
-                                    this.$emit('updateTestResponseContent', response.body, i, j);
+                                    this.$emit('updateConversationStatus', status, platform, i, j);
+                                    this.$emit('updateTestResponseContent', response.body, platform, i, j);
                                     break;
                                 }
 
-                                this.$emit('updateConversationStatus', status, i, j);
-                                this.$emit('updateTestResponseContent', response.body, i, j);
-
-                                console.log('Done!');
+                                this.$emit('updateConversationStatus', status, platform, i, j);
+                                this.$emit('updateTestResponseContent', response.body, platform, i, j);
                             } catch(e) {
-                                console.log('ERROR');
                                 status = 'failed';
+                                this.$emit('updateConversationStatus', status, platform, i, j);
+                                this.$emit('updateTestResponseContent', { audioContent: '', audioText: '400: Connection error.' },
+                                    platform, i, j);
                                 break;
                             }
                         }
@@ -146,10 +142,14 @@
             selectAllTests: function(selected) {
                 console.log(this.$refs);
                 for(let ref in this.$refs) {
+                    // skip the 'select all' selection
                     if(ref === 'testItemsSelection') {
                         continue;
                     }
+
                     this.$refs[ref][0].checked = selected;
+
+                    // add the currently selected test to the tests to test <- beautiful comment don't touch
                     this.selectTest(selected, parseInt(ref.split('_')[1]));
                 }
             },
@@ -372,7 +372,7 @@
 
                         .test-status {
                             position: absolute;
-                            left: 0;
+                            left: 2%;
                             top: 0;
                             bottom: 0;
                             font-size: 22px;
