@@ -10,7 +10,7 @@
         </transition>
         <div class="google-authorization-input-overlay-container" v-if="this.$route.query.gA">
             <div class="form-group">
-                <div class="exit-container">
+                <div class="exit-container" @click="exitGoogleAuthorizationContainer">
                     <font-awesome-icon icon="times"/>
                 </div>
                 <div class="project-id-input-container">
@@ -191,7 +191,7 @@
             },
             updateTestResponseContent: function(responseBody, platform, testIndex, conversationIndex) {
                 this.tests[testIndex].conversations[conversationIndex].response.audio[platform] = responseBody.audioContent;
-                console.log('Updating Test Repsonse Content');
+                console.log('Updating Test Response Content');
                 this.tests[testIndex].conversations[conversationIndex].response.text.actual = responseBody.audioText ?
                     responseBody.audioText : 'No speech text detected!';
 
@@ -267,7 +267,9 @@
                 if(response.status === 200) {
                     this.$router.push({path: '/ruben'});
                 }
-
+            },
+            exitGoogleAuthorizationContainer: function() {
+                this.$router.push({path: '/ruben'});
             }
         }
     }
@@ -344,7 +346,9 @@
 
             .form-group {
                 width: 50%;
+                max-width: 340px;
                 height: 30%;
+                max-height: 180px;
                 margin: auto;
                 top: 0;
                 bottom: 0;
@@ -355,10 +359,11 @@
                 border-radius: 5px;
 
                 .project-id-input-container {
-                    height: 40%;
+                    height: 35%;
                     width: 70%;
                     position: absolute;
                     top: 5%;
+                    bottom: 28%;
                     left: 0;
                     right: 0;
                     margin: auto;
@@ -380,7 +385,8 @@
                     width: 70%;
                     height: 35%;
                     position: absolute;
-                    top: 24%;
+                    top: 28%;
+                    bottom: 5%;
                     left: 0;
                     right: 0;
                     margin: auto;
@@ -400,7 +406,8 @@
 
                 .exit-container {
                     position: absolute;
-                    right: 0;
+                    right: 3%;
+                    top: 2%;
                     opacity: .3;
                     cursor: pointer;
                 }
@@ -419,10 +426,11 @@
         .column-left, .column-right {
             height: 90%;
             width: 45%;
-            max-width: 700px;
+            max-width: 550px;
+            max-height: 750px;
             display: inline-block;
             position: relative;
-            margin: 3% 1%;
+            margin: 2% 1%;
         }
 
         .column-left {
