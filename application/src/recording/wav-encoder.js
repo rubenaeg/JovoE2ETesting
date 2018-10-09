@@ -8,6 +8,7 @@ export default class {
     getData() {
         this._joinSamples()
 
+        // change sample rate to 16000
         this.samples = interpolateArray(this.samples, 16000, this.sampleRate);
         this.sampleRate = 16000;
 
@@ -54,8 +55,6 @@ export default class {
         }
 
         this.samples = joinedSamples;
-
-        // this.samples = interpolateArray(joinedSamples, 16000, this.sampleRate);
     }
 
     _writeString(view, offset, string) {
@@ -66,8 +65,13 @@ export default class {
 }
 
 
-
-// for changing the sampling rate, data,
+/**
+ * Changes the set sample rate to a desird one.
+ * @param data
+ * @param newSampleRate
+ * @param oldSampleRate
+ * @returns {any[]}
+ */
 function interpolateArray(data, newSampleRate, oldSampleRate) {
     let fitCount = Math.round(data.length * (newSampleRate / oldSampleRate));
     let newData = new Array();

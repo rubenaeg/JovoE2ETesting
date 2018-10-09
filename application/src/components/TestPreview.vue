@@ -254,16 +254,17 @@
                     .request-input-preview.speech-bubble:after {
                         content: '';
                         position: absolute;
-                        bottom: 0;
                         left: 0;
+                        top: 0;
                         width: 0;
                         height: 0;
-                        border: 20px solid transparent;
-                        border-top-color: white;
-                        border-bottom: 0;
+                        border: 10px solid transparent;
+                        border-bottom-width: 7px;
+                        border-top-width: 7px;
+                        border-right-color: white;
                         border-left: 0;
-                        margin-left: 0;
-                        margin-bottom: -15px;
+                        margin-top: 7px;
+                        margin-left: -10px;
                     }
 
                     .response-input-preview {
@@ -300,16 +301,24 @@
                         background-color: #a1f3a1;
                     }
 
-                    .success:after {
-                        border-top-color: #a1f3a1 !important;
+                    .request-input-preview.success:after {
+                        border-right-color: #a1f3a1 !important;
+                    }
+
+                    .response-input-preview.success:after {
+                        border-left-color: #a1f3a1 !important;
                     }
 
                     .failed {
                         background-color: #ffd1d1;
                     }
 
-                    .failed:after {
-                        border-top-color: #ffd1d1 !important;
+                    .request-input-preview.failed:after {
+                        border-right-color: #ffd1d1 !important;
+                    }
+
+                    .response-input-preview.failed:after {
+                        border-left-color: #ffd1d1 !important;
                     }
 
                     .pending, .default {
@@ -323,16 +332,17 @@
                     .response-input-preview.speech-bubble:after {
                         content: '';
                         position: absolute;
-                        bottom: 0;
                         right: 0;
+                        top: 0;
                         width: 0;
                         height: 0;
-                        border: 20px solid transparent;
-                        border-top-color: white;
-                        border-bottom: 0;
+                        border: 10px solid transparent;
+                        border-bottom-width: 7px;
+                        border-top-width: 7px;
+                        border-left-color: white;
                         border-right: 0;
-                        margin-left: -10px;
-                        margin-bottom: -15px;
+                        margin-top: 7px;
+                        margin-right: -10px;
                     }
                 }
             }

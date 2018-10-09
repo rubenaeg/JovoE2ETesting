@@ -8,14 +8,14 @@ export default class {
     start() {
         navigator.mediaDevices.getUserMedia({audio: true})
             .then(this.captureAudio.bind(this))
-            .catch(this._micError.bind(this))
+            .catch(this.micError.bind(this))
     }
 
     stop(emitAudioCallback) {
-        this.stream.getTracks().forEach((track) => track.stop());
+        this.stream.getAudioTracks().forEach((track) => track.stop());
         console.log(this.stream.getTracks());
         this.input.disconnect();
-        this.processor.disconnect();
+        this.scriptProcessorNode.disconnect();
         this.context.close();
 
         let encoder = new WavEncoder({
@@ -40,19 +40,19 @@ export default class {
          * the app, used to capture the incoming audio from the microphone.
          */
         this.input = this.context.createMediaStreamSource(stream);
-        this.processor = this.context.createScriptProcessor(this.bufferSize, 1, 1);
+        this.scriptProcessorNode = this.context.createScriptProcessor(4096, 1, 1);
         this.stream = stream;
 
-        this.processor.onaudioprocess = (ev) => {
+        this.scriptProcessorNode.onaudioprocess = (ev) => {
             let sample = ev.inputBuffer.getChannelData(0);
             this.samples.push(new Float32Array(sample));
         };
 
-        this.input.connect(this.processor)
-        this.processor.connect(this.context.destination)
+        this.input.connect(this.scriptProcessorNode);
+        this.scriptProcessorNode.connect(this.context.destination);
     }
 
-    _micError(error) {
+    micError(error) {
         console.log(error);
     }
 }

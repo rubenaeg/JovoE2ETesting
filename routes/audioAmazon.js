@@ -6,7 +6,7 @@ const fs = require('fs');
 const http2 = require('http2');
 const httpParser = require('http-message-parser');
 
-const awaitResponse = require('./logging/jovoLogging').getSpeech;
+const getSpeech = require('./logging/jovoLogging').getSpeech;
 const getAccessToken = require('./authorization/authorization').getAccessToken;
 const refreshAccessToken = require('./authorization/authorization').refreshAlexaAccessToken;
 
@@ -27,15 +27,6 @@ audioAmazon.route('/')
 
         let payload = buildPayload(requestAudio);
         let result = '';
-        //
-        // let accessToken = getAccessToken(req.body.userId, 'alexa');
-        // sendRequest(payload, accessToken)
-        //     .then((res) => {
-        //         let result = res;
-        //     })
-        //     .catch((e) => {
-        //         console.log('AAAAAAH');
-        //     });
 
         try {
             let accessToken = getAccessToken(req.body.userId, 'alexa');
@@ -58,7 +49,9 @@ audioAmazon.route('/')
         }
 
 
-        let speech = awaitResponse();
+        console.log('GETTING SPEECH');
+        let speech = getSpeech();
+        console.log(speech);
 
         let responseBody = JSON.stringify({
             audioContent: result.audio,

@@ -28,7 +28,7 @@
                     <div class="conversation" v-for="(conversation, i) in test.conversations">
                         <div class="message">
                             <div class="request-input-preview speech-bubble">
-                                <textarea placeholder="Say Hello." :ref="`requestInput_${i}`" class="request-input" v-model="conversation.request.text"></textarea>
+                                <textarea placeholder="Request Input..." :ref="`requestInput_${i}`" class="request-input" v-model="conversation.request.text"></textarea>
                             </div>
                             <button type="button" class="btn btn-primary recording" v-on:mousedown="startRecording"
                                     v-on:mouseup="stopRecording(i)">
@@ -44,7 +44,7 @@
 
                         <div class="message">
                             <div class="response-input-preview speech-bubble">
-                                <textarea placeholder="Hello World!" :ref="`responseInput_${i}`" class="response-input" v-model="conversation.response.text.expected"></textarea>
+                                <textarea placeholder="Expected Response Output..." :ref="`responseInput_${i}`" class="response-input" v-model="conversation.response.text.expected"></textarea>
                             </div>
                         </div>
                     </div>
@@ -131,7 +131,7 @@
             startRecording: function() {
                 let recorder = new Recorder();
                 this.recorder = recorder;
-                recorder.start(this.mediaStreamProp);
+                recorder.start(this.mediaStream);
             },
             stopRecording: function(index) {
                 let recorder = this.recorder;
@@ -140,7 +140,9 @@
                 });
             },
             playAudio: function(index) {
-                console.log(this.audioPlaying);
+                if(!this.getAudio(index)) {
+                    return;
+                }
                 this.audioElement = new Audio(this.getAudio(index));
                 this.audioElement.onended = () => {
                     this.audioPlaying = false;
@@ -408,21 +410,23 @@
                                 display: table;
                                 background-color: white;
                                 border-radius: 5px;
+                                box-shadow: 0 5px 15px 0 rgba(112, 128, 175, 0.2);
                             }
 
                             .request-input-preview.speech-bubble:after {
                                 content: '';
                                 position: absolute;
-                                bottom: 0;
                                 left: 0;
+                                top: 50%;
                                 width: 0;
                                 height: 0;
-                                border: 20px solid transparent;
-                                border-top-color: white;
-                                border-bottom: 0;
+                                border: 10px solid transparent;
+                                border-bottom-width: 7px;
+                                border-top-width: 7px;
+                                border-right-color: white;
                                 border-left: 0;
-                                margin-left: 0;
-                                margin-bottom: -15px;
+                                margin-top: -20px;
+                                margin-left: -10px;
                             }
 
                             .response-input-preview {
@@ -435,6 +439,7 @@
                                 margin-right: 4%;
                                 background-color: white;
                                 border-radius: 5px;
+                                box-shadow: 0 5px 15px 0 rgba(112, 128, 175, 0.2);
 
                                 .response-input {
                                     display: table-cell;
@@ -445,16 +450,17 @@
                             .response-input-preview.speech-bubble:after {
                                 content: '';
                                 position: absolute;
-                                bottom: 0;
                                 right: 0;
+                                top: 50%;
                                 width: 0;
                                 height: 0;
-                                border: 20px solid transparent;
-                                border-top-color: white;
-                                border-bottom: 0;
+                                border: 10px solid transparent;
+                                border-bottom-width: 7px;
+                                border-top-width: 7px;
+                                border-left-color: white;
                                 border-right: 0;
-                                margin-left: -10px;
-                                margin-bottom: -15px;
+                                margin-top: -20px;
+                                margin-right: -10px;
                             }
 
                             [contentEditable=true]:empty:not(:focus):before {

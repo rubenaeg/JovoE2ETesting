@@ -20,7 +20,7 @@ authorization.route('/')
             res.send(body);
         } else {
             res.status(400)
-                .send('Bad Request, id not specified.');
+                .send('Bad Request, ID not specified.');
         }
     })
     .post((req, res, next) => {
@@ -49,8 +49,7 @@ authorization.route('/')
         } else {
             users[userId] = user;
             setUsers(users);
-            res.statusCode = 201;
-            res.send('Successfully authorized');
+            res.status(201).send('Successfully authorized');
         }
     });
 
@@ -58,23 +57,30 @@ authorization.route('/alexa')
     .get(async(req, res, next) => {
         let users = getUsers();
         let query = req.query;
-        if(query.code) {
-            let code = query.code;
-            let userId = query.state;
+        if(!query.code || !query.state) {
+            return res.status(400).send('Error from LWA. Please try to login again.');
+        }
 
+        let code = query.code;
+        let userId = query.state;
+
+        try {
             let authorizationResponse = await getAlexaAccessToken(code);
+
             let accessToken = authorizationResponse.access_token;
             let refreshToken = authorizationResponse.refresh_token;
 
             users[userId].authorization.alexa.accessToken = accessToken;
             users[userId].authorization.alexa.refreshToken = refreshToken;
-
             setUsers(users);
+        } catch(e) {
+            console.log(e);
+            return res.status(400).send('Error from LWA. Please try to login again.');
         }
 
         console.log('Authorization for Alexa');
         res.writeHead(301,
-            {Location: 'http://localhost:8080/' + query.state}
+            {Location: 'http://localhost:8080/' + userId}
         );
         res.end();
     });
@@ -83,10 +89,15 @@ authorization.route('/google')
     .get(async(req, res, next) => {
         let users = getUsers();
         let query = req.query;
-        if(query.code) {
-            let code = query.code;
-            let userId = query.state;
 
+        if(!query.code || !query.state) {
+            return res.status(400).send('Error from Google Identity Platform. Please try to login again.');
+        }
+
+        let code = query.code;
+        let userId = query.state;
+
+        try {
             let authorizationResponse = await getGoogleAccessToken(code);
             console.log(authorizationResponse);
             let accessToken = authorizationResponse.access_token;
@@ -94,27 +105,40 @@ authorization.route('/google')
 
             users[userId].authorization.google.accessToken = accessToken;
             users[userId].authorization.google.refreshToken = refreshToken;
-
             setUsers(users);
+        } catch(e) {
+            console.log(e);
+            return res.status(400).send('Error from LWA. Please try to login again.');
         }
+
         res.writeHead(301,
             {Location: 'http://localhost:8080/' + query.state + '?gA=true'}
         );
         res.end();
     })
     .post((req, res, next) => {
-        let userId = req.body.userId;
-        let projectId = req.body.projectId;
-        let language = req.body.languageCode;
+        let body = req.body;
+        if(!body.userId || body.projectId || body.languageCode) {
+            return res.status(400).send('Error with authorization input, please try again.');
+        }
+
+        let userId = body.userId;
+        let projectId = body.projectId;
+        let language = body.languageCode;
         let users = getUsers();
+
+        if(!users[userId]) {
+            return res.status(400).send('UserId is not valid.');
+        }
+
         users[userId].authorization.google.projectId = projectId;
         users[userId].authorization.google.languageCode = language;
         setUsers(users);
 
-        res.statusCode = 200;
         res.send('Successful saved projectId and language.');
     });
 
+// TODO Error handling
 authorization.route('/logout')
     .post((req, res, next) => {
         let userId = req.body.userId;
@@ -144,9 +168,11 @@ function getAlexaAccessToken(authorizationCode) {
             }
         }, (err, res, body) => {
             if(err) {
-                reject(err);
+                return reject({
+                    status: err.statusCode,
+                    msg: err
+                });
             }
-            console.log(body);
             resolve(JSON.parse(body));
         })
     })
@@ -169,7 +195,10 @@ function getGoogleAccessToken(authorizationCode) {
             }
         }, (err, res, body) => {
             if(err) {
-                reject(err);
+                return reject({
+                    status: err.statusCode,
+                    msg: err
+                });
             }
             resolve(JSON.parse(body));
         })

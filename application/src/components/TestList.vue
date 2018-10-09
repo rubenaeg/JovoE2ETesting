@@ -73,9 +73,6 @@
         ],
         methods: {
             activate: function(index) {
-                console.log(this.testsToTest);
-                console.log(this.$refs);
-
                 this.$emit('setSelectedTest', index);
             },
             startTests: async function() {
