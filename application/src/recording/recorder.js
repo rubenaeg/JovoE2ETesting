@@ -1,3 +1,9 @@
+/**
+ * @author grishkovelli unter https://github.com/grishkovelli/vue-audio-recorder
+ *
+ * Bearbeitet von Ruben Aegerter zur Anwendung für APIs
+ */
+
 import WavEncoder from './wav-encoder'
 
 export default class {
